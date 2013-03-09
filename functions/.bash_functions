@@ -1,4 +1,3 @@
-
 apache.conf.vhost.tsv () 
 { 
     perl -MEnglish -w -MEnglish -w -lane '
@@ -34,7 +33,7 @@ mysql.grants.dump ()
 { 
     mysql -B -N $@ -e "SELECT DISTINCT CONCAT(
     'SHOW GRANTS FOR ''', user, '''@''', host, ''';'
-    ) AS query FROM mysql.user" | mysql $@ | sed 's/\(GRANT .*\)/\1;/;s/^\(Grants for .*\)/## \1 ##/;/##/{x;p;x;}'
+    ) AS query FROM mysql.user" | mysql -f $@ 2>&1 | sed -re '/^GRANT /s/$/;/;/^(Grants|ERROR) /s/^.*$/\n## & ##/'
 }
 openssl.cert.check () 
 { 
