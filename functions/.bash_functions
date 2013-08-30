@@ -29,6 +29,12 @@ print join("\t", $type, $ip, $port, $site, $conf, $line)
 ; '
 }
 
+group.id () 
+{ 
+    [ "${1}" ] && awk -F: -v re="^${1}$" '$1 ~ re {print $3}' /etc/group || echo "Usage: grp_id <group name> "
+}
+
+
 mysql.grants.dump () 
 { 
     mysql -B -N $@ -e "SELECT DISTINCT CONCAT(
