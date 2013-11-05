@@ -70,3 +70,41 @@ port.pid ()
     [ $1 ] && port=$1;
     sudo ss -n -l -p sport = :${port} | tail -n +2 | tr -s ' ' '\t' | cut -f5 | cut -d, -f2
 }
+
+
+site.info () {
+website=www.example.com
+[ ${1} ] && website="${1}"
+domain=$(<<< ${website} rev | cut -d. -f1-2 | rev)
+
+echo == registrar
+whois ${domain}
+
+echo == hosting
+dig +short ${website} | xargs -n1 -r whois
+
+echo == IP website
+dig +noall +answer ${website}
+
+echo == reverse DNS
+dig +short ${website} | xargs -n1 -r dig +noall +answer -x 
+
+echo == double reverse DNS
+dig +short ${website} | xargs -n1 -r dig +short -x | xargs -n1 -r dig +noall +answer
+
+echo == IP domain
+dig +noall +answer ${domain}
+
+echo == all DNS records for domain
+dig +noall +answer ${domain} ANY
+
+echo == webserver
+curl -s -I -A foobar http://www.avasflowers.net/
+
+}
+
+
+
+
+
+
