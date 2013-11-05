@@ -100,7 +100,7 @@ site.info ()
     dig +noall +answer ${domain} ANY;
 
     echo == webserver;
-    curl -s -I -A foobar http://www.avasflowers.net/
+    curl -s -I -A foobar http://${website}/
 }
 
 
