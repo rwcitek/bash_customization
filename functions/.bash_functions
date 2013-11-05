@@ -72,35 +72,35 @@ port.pid ()
 }
 
 
-site.info () {
-website=www.example.com
-[ ${1} ] && website="${1}"
-domain=$(<<< ${website} rev | cut -d. -f1-2 | rev)
+site.info () 
+{ 
+    website=www.example.com;
+    [ ${1} ] && website="${1}";
+    domain=$(<<< ${website} cut -d. -f2- );
 
-echo == registrar
-whois ${domain}
+    echo == registrar;
+    whois ${domain};
 
-echo == hosting
-dig +short ${website} | xargs -n1 -r whois
+    echo == hosting;
+    dig +short ${website} | xargs -n1 -r whois;
 
-echo == IP website
-dig +noall +answer ${website}
+    echo == IP website;
+    dig +noall +answer ${website};
 
-echo == reverse DNS
-dig +short ${website} | xargs -n1 -r dig +noall +answer -x 
+    echo == reverse DNS;
+    dig +short ${website} | xargs -n1 -r dig +noall +answer -x;
 
-echo == double reverse DNS
-dig +short ${website} | xargs -n1 -r dig +short -x | xargs -n1 -r dig +noall +answer
+    echo == double reverse DNS;
+    dig +short ${website} | xargs -n1 -r dig +short -x | xargs -n1 -r dig +noall +answer;
 
-echo == IP domain
-dig +noall +answer ${domain}
+    echo == IP domain;
+    dig +noall +answer ${domain};
 
-echo == all DNS records for domain
-dig +noall +answer ${domain} ANY
+    echo == all DNS records for domain;
+    dig +noall +answer ${domain} ANY;
 
-echo == webserver
-curl -s -I -A foobar http://www.avasflowers.net/
-
+    echo == webserver;
+    curl -s -I -A foobar http://www.avasflowers.net/
 }
 
 
