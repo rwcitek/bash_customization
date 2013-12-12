@@ -52,11 +52,11 @@ openssl.cert.get ()
 }
 password.create.alnum () 
 { 
-    tr -dc '[:alnum:]' < /dev/urandom | head -c20 | fmt
+    LANG=C tr -dc '[:alnum:]' < /dev/urandom | head -c20 | fmt
 }
 password.create.numeric () 
 { 
-    tr -dc '[:digit:]' < /dev/urandom | head -c20 | fmt
+    LANG=C tr -dc '[:digit:]' < /dev/urandom | head -c20 | fmt
 }
 pid.ps () 
 { 
