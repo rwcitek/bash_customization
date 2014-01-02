@@ -28,6 +28,20 @@ else { next ; };
 print join("\t", $type, $ip, $port, $site, $conf, $line) 
 ; '
 }
+ec2.metadata.display () {
+local item="$1"
+for name in $(curl -s http://169.254.169.254/latest/meta-data/${item}) ; do
+  if [ -z ${name%%*/} ] ; then
+    echo ${name}
+    ec2.metadata.display "${item}/${name}" | sed -e 's/^/  /'
+  elif [ ${name%%=*} != ${name} ] ; then
+    echo ${name%%=*}/
+    ec2.metadata.display "${item}/${name%%=*}/" | sed -e 's/^/  /'
+  else
+    echo ${name}=$(curl -s http://169.254.169.254/latest/meta-data/${item}/${name})
+  fi
+done
+}
 group.id () 
 { 
     [ "${1}" ] && awk -F: -v re="^${1}$" '$1 ~ re {print $3}' /etc/group || echo "Usage: $FUNCNAME <group name> "
