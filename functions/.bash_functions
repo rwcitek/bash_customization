@@ -118,7 +118,49 @@ site.info ()
 }
 
 
+memc.add () 
+{ 
+    host=localhost ;
+    [ $4 ] && host=$4;
+    { 
+        cmd=add;
+        [ $1 ] || return;
+        key=$(echo $1 | cut -d= -f1);
+        value=$(echo $1 | cut -d= -f2);
+        bytes=${#value};
+        flags=0;
+        [ $2 ] && flags=$2;
+        exptime=600;
+        [ $3 ] && exptime=$3;
+        echo -e "${cmd} ${key} ${flags} ${exptime} ${bytes}\r";
+        echo -e "${value}\r";
+        sleep .1
+    } | netcat ${host} 11211
+}
 
 
 
+memc.get () 
+{ 
+    host=localhost ;
+    [ $2 ] && host=$2;
+    { 
+        cmd=get;
+        [ $1 ] || return;
+        key=$1;
+        echo -e "${cmd} ${key}\r";
+        sleep .1
+    } | netcat ${host} 11211
+}
+
+
+memc.stats () 
+{ 
+    host=localhost ;
+    [ $1 ] && host=$1;
+    { 
+        echo -e "stats\r\nquit\r\n";
+        sleep .1
+    } | netcat ${host} 11211
+}
 
