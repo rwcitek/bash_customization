@@ -1,6 +1,6 @@
 apache.conf.vhost.tsv () 
 { 
-    perl -MEnglish -w -MEnglish -w -lane '
+    perl -MEnglish -w -lane '
 if (/^\s*#/) { next ; } 
 elsif (/<VirtualHost/) { ($vhost,$port)=(split(/[:>]/, $F[1]))[0,1] ; $servername=$serveraliases=$docroot="" ; } 
 elsif (/ServerName/) { $servername=$serveraliases=$F[1] ; }
@@ -18,7 +18,7 @@ apache.vhost.tsv ()
 { 
     { 
         [ -f /etc/apache2/envvars ] && . /etc/apache2/envvars && apache2 -S 2> /dev/null || httpd -S 2>&1
-    } | perl -MEnglish -w -MEnglish -w -lane '
+    } | perl -MEnglish -w -lane '
 next unless defined $F[2] ;
 if ($F[-1] eq "NameVirtualHost") { ($ip,$port) = split(":",$F[0]) ; next }  ;
 if ($F[0] eq "default") {$type=$F[0]; $site=$F[2] ; ($conf, $line) = (split(/[)(:]/,$F[-1]))[1,2] ; }
@@ -28,23 +28,72 @@ else { next ; };
 print join("\t", $type, $ip, $port, $site, $conf, $line) 
 ; '
 }
-ec2.metadata.display () {
-local item="$1"
-for name in $(curl -s http://169.254.169.254/latest/meta-data/${item}) ; do
-  if [ -z ${name%%*/} ] ; then
-    echo ${name}
-    ec2.metadata.display "${item}/${name}" | sed -e 's/^/  /'
-  elif [ ${name%%=*} != ${name} ] ; then
-    echo ${name%%=*}/
-    ec2.metadata.display "${item}/${name%%=*}/" | sed -e 's/^/  /'
-  else
-    echo ${name}=$(curl -s http://169.254.169.254/latest/meta-data/${item}/${name})
-  fi
-done
+disk.write.test () 
+{ 
+    [ "$1" -gt 0 ] && tmpfile=$(mktemp zfoo.XXXXX) && dd if=/dev/zero of=${tmpfile} bs=1m count=$1 && sync;
+    \rm ${tmpfile}
+}
+ec2.metadata.display () 
+{ 
+    local item="$1";
+    for name in $(curl -s http://169.254.169.254/latest/meta-data/${item});
+    do
+        if [ -z ${name%%*/} ]; then
+            echo ${name};
+            ec2.metadata.display "${item}/${name}" | sed -e 's/^/  /';
+        else
+            if [ ${name%%=*} != ${name} ]; then
+                echo ${name%%=*}/;
+                ec2.metadata.display "${item}/${name%%=*}/" | sed -e 's/^/  /';
+            else
+                echo ${name}=$(curl -s http://169.254.169.254/latest/meta-data/${item}/${name});
+            fi;
+        fi;
+    done
 }
 group.id () 
 { 
     [ "${1}" ] && awk -F: -v re="^${1}$" '$1 ~ re {print $3}' /etc/group || echo "Usage: $FUNCNAME <group name> "
+}
+memc.add () 
+{ 
+    host=localhost;
+    [ $4 ] && host=$4;
+    { 
+        cmd=add;
+        [ $1 ] || return;
+        key=$(echo $1 | cut -d= -f1);
+        value=$(echo $1 | cut -d= -f2);
+        bytes=${#value};
+        flags=0;
+        [ $2 ] && flags=$2;
+        exptime=600;
+        [ $3 ] && exptime=$3;
+        echo -e "${cmd} ${key} ${flags} ${exptime} ${bytes}\r";
+        echo -e "${value}\r";
+        sleep .1
+    } | netcat ${host} 11211
+}
+memc.get () 
+{ 
+    host=localhost;
+    [ $2 ] && host=$2;
+    { 
+        cmd=get;
+        [ $1 ] || return;
+        key=$1;
+        echo -e "${cmd} ${key}\r";
+        sleep .1
+    } | netcat ${host} 11211
+}
+memc.stats () 
+{ 
+    host=localhost;
+    [ $1 ] && host=$1;
+    { 
+        echo -e "stats\r\nquit\r\n";
+        sleep .1
+    } | netcat ${host} 11211
 }
 mysql.grants.dump () 
 { 
@@ -84,83 +133,25 @@ port.pid ()
     [ $1 ] && port=$1;
     sudo ss -n -l -p sport = :${port} | tail -n +2 | tr -s ' ' '\t' | cut -f5 | cut -d, -f2
 }
-
-
 site.info () 
 { 
     website=www.example.com;
     [ ${1} ] && website="${1}";
     domain=$(<<< ${website} cut -d. -f2- );
-
     echo == registrar;
     whois ${domain};
-
     echo == hosting;
     dig +short ${website} | xargs -n1 -r whois;
-
     echo == IP website;
     dig +noall +answer ${website};
-
     echo == reverse DNS;
     dig +short ${website} | xargs -n1 -r dig +noall +answer -x;
-
     echo == double reverse DNS;
     dig +short ${website} | xargs -n1 -r dig +short -x | xargs -n1 -r dig +noall +answer;
-
     echo == IP domain;
     dig +noall +answer ${domain};
-
     echo == all DNS records for domain;
     dig +noall +answer ${domain} ANY;
-
     echo == webserver;
     curl -s -I -A foobar http://${website}/
 }
-
-
-memc.add () 
-{ 
-    host=localhost ;
-    [ $4 ] && host=$4;
-    { 
-        cmd=add;
-        [ $1 ] || return;
-        key=$(echo $1 | cut -d= -f1);
-        value=$(echo $1 | cut -d= -f2);
-        bytes=${#value};
-        flags=0;
-        [ $2 ] && flags=$2;
-        exptime=600;
-        [ $3 ] && exptime=$3;
-        echo -e "${cmd} ${key} ${flags} ${exptime} ${bytes}\r";
-        echo -e "${value}\r";
-        sleep .1
-    } | netcat ${host} 11211
-}
-
-
-
-memc.get () 
-{ 
-    host=localhost ;
-    [ $2 ] && host=$2;
-    { 
-        cmd=get;
-        [ $1 ] || return;
-        key=$1;
-        echo -e "${cmd} ${key}\r";
-        sleep .1
-    } | netcat ${host} 11211
-}
-
-
-memc.stats () 
-{ 
-    host=localhost ;
-    [ $1 ] && host=$1;
-    { 
-        echo -e "stats\r\nquit\r\n";
-        sleep .1
-    } | netcat ${host} 11211
-}
-
