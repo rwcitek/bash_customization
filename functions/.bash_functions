@@ -30,7 +30,7 @@ print join("\t", $type, $ip, $port, $site, $conf, $line)
 }
 disk.write.test () 
 { 
-    [ "$1" -gt 0 ] && tmpfile=$(mktemp zfoo.XXXXX) && dd if=/dev/zero of=${tmpfile} bs=1m count=$1 && sync;
+    [ "$1" -gt 0 ] && tmpfile=$(mktemp zfoo.XXXXX) && dd if=/dev/zero of=${tmpfile} bs=1000000 count=$1 && sync;
     \rm ${tmpfile}
 }
 ec2.metadata.display () 
@@ -51,6 +51,12 @@ ec2.metadata.display ()
         fi;
     done
 }
+
+ec2.userdata.display ()
+{
+curl -s http://169.254.169.254/latest/user-data/ ; echo
+}
+
 group.id () 
 { 
     [ "${1}" ] && awk -F: -v re="^${1}$" '$1 ~ re {print $3}' /etc/group || echo "Usage: $FUNCNAME <group name> "
