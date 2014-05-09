@@ -1,0 +1,29 @@
+rwcitek.apache.vhosts.configfile-pos.all () 
+{ 
+    file=/usr/local/apache/conf/httpd.conf;
+    pos=1;
+    [ "$1" ] && IFS=: read file pos <<< "$1";
+    cat -n "${file}" | cut -d'
+' -f "${pos}"- | grep -B1000 -m1 '</VirtualHost'
+}
+rwcitek.apache.vhosts.configfile-pos.brief () 
+{ 
+    rwcitek.apache.vhosts.configfile-pos.all "$1" | grep -e ServerName -e ServerAlias -e DocumentRoot -e CustomLog
+}
+rwcitek.apache.vhosts.pattern () 
+{ 
+    patt=.;
+    [ "$1" ] && patt="$1";
+    httpd -S 2>&1 | grep namevhost | grep "${patt}" | tr -d '()' | awk '{print $1 "=" $2, $3 "=" $4, "configfile=" $5}'
+}
+rwcitek.mail.exim.queue.del () 
+{ 
+    acct=.;
+    [ "$1" ] && acct="$1";
+    exim -bp | awk -v RS="" '{ gsub("\n"," "); print } ' | grep "${acct}" | awk '{print $3}' | xargs -r exim -Mrm
+}
+rwcitek.mail.exim.sender.cwd () 
+{ 
+    grep -o 'cwd=.*$' < /var/log/exim_mainlog | grep -v /var/spool | tr -s ' =' '\t' | cut -f2 | sort | uniq -c | sort -nr
+}
+

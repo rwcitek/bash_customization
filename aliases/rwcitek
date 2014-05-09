@@ -1,0 +1,4 @@
+alias rwcitek.apache.vhosts='2>&1 httpd -S '
+alias rwcitek.mail.exim.queue='exim -bp | awk -v RS="" '\''{ gsub("\n"," "); print } '\'' '
+alias rwcitek.mail.exim.queue.size='exim -bpc'
+alias rwcitek.netstat-plnt='netstat -plnt | LANG=C sort -t/ -k2 '

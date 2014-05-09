@@ -119,6 +119,43 @@ openssl.cert.get ()
     REMPORT=${2:-443};
     echo | openssl s_client -connect ${REMHOST}:${REMPORT} 2>&1 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p'
 }
+openssl.cert.fulltext () 
+{ 
+    REMHOST=$1;
+    REMPORT=${2:-443};
+    echo | openssl s_client -connect ${REMHOST}:${REMPORT} 2>&1 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | openssl x509 -noout -text
+}
+openssl.modulus.md5sum () 
+{ 
+    local file ext cmd exts;
+    declare -A exts;
+    exts=([key]="rsa" [crt]="x509" [csr]="req");
+    while [ "$#" -gt 0 ]; do
+        file=$1;
+        shift;
+        ext=${file##*.};
+        cmd=${exts[$ext]};
+        echo ${file} $(openssl ${cmd} -noout -modulus -in ${file} | md5sum | cut -d" " -f1 )
+    done
+}
+
+
+openssl.modulus () 
+{ 
+    local file ext cmd exts;
+    declare -A exts;
+    exts=([key]="rsa" [crt]="x509" [csr]="req");
+    while [ "$#" -gt 0 ]; do
+        file=$1;
+        shift;
+        ext=${file##*.};
+        cmd=${exts[$ext]};
+        echo == ${file};
+        openssl ${cmd} -noout -modulus -in ${file};
+    done
+}
+
+
 password.create.alnum () 
 { 
     LANG=C tr -dc '[:alnum:]' < /dev/urandom | head -c20 | fmt
