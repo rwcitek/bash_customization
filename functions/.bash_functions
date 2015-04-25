@@ -155,6 +155,15 @@ openssl.modulus ()
     done
 }
 
+openssl.protocol.test () {
+proto=ssl2
+ip=127.0.0.1
+port=443
+[ "$1" ] && ip="$1"
+echo ${ip}:${port} = $(
+echo | openssl s_client -${proto} -connect ${ip}:${port} 2> /dev/null | grep -q Cipher && echo yes ${proto} || echo no ${proto}
+)
+}
 
 password.create.alnum () 
 { 
