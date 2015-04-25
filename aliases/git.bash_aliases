@@ -1,6 +1,7 @@
 alias git.add='git add'
 alias git.bisect='git bisect'
 alias git.branch='git branch'
+alias git.branch.jump='git checkout'
 alias git.branch.list='git.branch'
 alias git.branch.list.all='git.branch.list -a'
 alias git.checkout='git checkout'
