@@ -1,0 +1,8 @@
+alias tmux.alias.list='alias.list | grep "^alias tmux\."'
+alias tmux.session.attach='tmux attach'
+alias tmux.session.attach.named='tmux.session.attach -t '
+alias tmux.session.kill.named='tmux kill-session -t '
+alias tmux.session.list='tmux ls'
+alias tmux.session.new='tmux '
+alias tmux.session.new.named='tmux new -s '
+alias tmux.session.rename.named='tmux rename-session -t '
