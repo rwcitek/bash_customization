@@ -49,7 +49,7 @@ alias git.log.graph='git.log --graph --pretty=format:'\''%C(yellow)%h%C(cyan)%d%
 alias git.merge='git merge'
 alias git.mv='git mv'
 alias git.pull='git pull'
-alias git.push='git push'
+alias git.push='git push --tags'
 alias git.rebase='git rebase'
 alias git.remote='git remote'
 alias git.remote.add='git.remote add'
