@@ -1,0 +1,4 @@
+# general naming scheme
+# {namespace}.{object}.{method}.{option}
+
+

@@ -1,14 +1,9 @@
-# general naming scheme
-# {namespace}.{object}.{method}.{option}
-# namespace == docker
-# object == (image,container,server,tarfile,registry)
-# method == variations on CRUD (create,read,update,destroy)
-
-
+alias docker.alias.list='alias.list | grep "^alias docker\."'
 alias docker.container.attach='docker attach'
 alias docker.container.copy='docker cp'
 alias docker.container.delete='docker rm'
 alias docker.container.diff='docker diff'
+alias docker.container.exec='docker exec '
 alias docker.container.file.copy=': stub'
 alias docker.container.inspect='docker inspect'
 alias docker.container.kill='docker kill'
@@ -45,5 +40,5 @@ alias docker.registry.search='docker search'
 alias docker.server.events='docker events'
 alias docker.server.info='docker info'
 alias docker.server.version='docker version'
-alias docker.tarfile.new.image='docker save'
 alias docker.tarfile.new.container='docker export'
+alias docker.tarfile.new.image='docker save'
