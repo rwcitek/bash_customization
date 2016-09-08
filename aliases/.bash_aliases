@@ -102,5 +102,6 @@ alias variable.list='set'
 alias variable.new='declare'
 alias vi='vim'
 alias xml='xmlstarlet'
-alias json2yaml='ruby -rjson -ryaml -e '\''puts JSON.parse(ARGF.read).to_yaml'\'''
 alias yaml2json='ruby -rjson -ryaml -e '\''puts YAML::load(ARGF.read).to_json'\'''
+alias json2yaml='ruby -rjson -ryaml -e '\''puts JSON.parse(ARGF.read).to_yaml(line_width: -1)'\'''
+
