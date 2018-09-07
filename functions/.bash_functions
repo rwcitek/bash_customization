@@ -167,11 +167,11 @@ echo | openssl s_client -${proto} -connect ${ip}:${port} 2> /dev/null | grep -q 
 
 password.create.alnum () 
 { 
-    LANG=C tr -dc '[:alnum:]' < /dev/urandom | head -c20 | fmt
+    LANG=C tr -dc '[:alnum:]' < /dev/urandom | head -c${1:-20} | fmt
 }
 password.create.numeric () 
 { 
-    LANG=C tr -dc '[:digit:]' < /dev/urandom | head -c20 | fmt
+    LANG=C tr -dc '[:digit:]' < /dev/urandom | head -c${1:-20} | fmt
 }
 pid.ps () 
 { 
@@ -207,3 +207,6 @@ site.info ()
     echo == webserver;
     curl -s -I -A foobar http://${website}/
 }
+
+whatismyip () { dig +short myip.opendns.com @resolver1.opendns.com ; }
+
