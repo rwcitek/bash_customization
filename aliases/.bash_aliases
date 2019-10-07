@@ -105,3 +105,5 @@ alias xml='xmlstarlet'
 alias yaml2json='ruby -rjson -ryaml -e '\''puts YAML::load(ARGF.read).to_json'\'''
 alias json2yaml='ruby -rjson -ryaml -e '\''puts JSON.parse(ARGF.read).to_yaml(line_width: -1)'\'''
 
+alias ls.json='stat --printf="{\"SELinux_context\":\"%C\",\"access_human\":\"%A\",\"access_octal\":\"%a\",\"atime_epoch\":\"%X\",\"atime_human\":\"%x\",\"birht_time_epoch\":\"%W\",\"birth_time_human\":\"%w\",\"block_count\":\"%b\",\"blocksize_bytes\":\"%B\",\"ctime_epoch\":\"%Z\",\"ctime_human\":\"%z\",\"device_decimal\":\"%d\",\"device_hex\":\"%D\",\"file_type\":\"%F\",\"gid\":\"%g\",\"group\":\"%G\",\"hardlink_count\":\"%h\",\"inode\":\"%i\",\"io_size_hint\":\"%o\",\"major_device_hex\":\"%t\",\"minor_device_hex\":\"%T\",\"mount_point\":\"%m\",\"mtime_epoch\":\"%Y\",\"mtime_human\":\"%y\",\"name\":\"%n\",\"name_dereferenced\":\"%N\",\"owner\":\"%U\",\"raw_hex\":\"%f\",\"size_bytes\":\"%s\",\"uid\":\"%u\"}" '
+
